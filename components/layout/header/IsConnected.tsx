@@ -13,11 +13,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { User, LogOut, Settings, PenTool, UserCircle } from "lucide-react";
 import Link from "next/link";
-import { useSession, signOut } from "@/lib/auth-client";
+import { useSession, signOut } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
 
 export default function IsConnected() {
-  const { data: session, isLoading } = useSession();
+  const { data: session, isPending } = useSession();
 
   const handleSignOut = async () => {
     try {
@@ -28,7 +28,7 @@ export default function IsConnected() {
     }
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse"></div>
     );
@@ -43,7 +43,7 @@ export default function IsConnected() {
           size="sm"
           className="justify-start lg:justify-center text-gray-600 hover:text-gray-900"
         >
-          <Link href="/login">
+          <Link href="/auth/login">
             <User className="h-4 w-4 mr-2 lg:mr-0" />
             <span className="lg:hidden">Login</span>
           </Link>
@@ -54,7 +54,7 @@ export default function IsConnected() {
           size="sm"
           className="justify-start lg:justify-center bg-blue-600 hover:bg-blue-700"
         >
-          <Link href="/signup">
+          <Link href="/auth/signup">
             <span>Sign Up</span>
           </Link>
         </Button>
