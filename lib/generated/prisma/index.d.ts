@@ -1863,10 +1863,12 @@ export namespace Prisma {
 
   export type CategoryCountOutputType = {
     posts: number
+    tags: number
   }
 
   export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | CategoryCountOutputTypeCountPostsArgs
+    tags?: boolean | CategoryCountOutputTypeCountTagsArgs
   }
 
   // Custom InputTypes
@@ -1885,6 +1887,13 @@ export namespace Prisma {
    */
   export type CategoryCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PostWhereInput
+  }
+
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
   }
 
 
@@ -10329,6 +10338,7 @@ export namespace Prisma {
     order?: boolean
     slug?: boolean
     posts?: boolean | Category$postsArgs<ExtArgs>
+    tags?: boolean | Category$tagsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["category"]>
 
@@ -10356,6 +10366,7 @@ export namespace Prisma {
   export type CategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug", ExtArgs["result"]["category"]>
   export type CategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | Category$postsArgs<ExtArgs>
+    tags?: boolean | Category$tagsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -10365,6 +10376,7 @@ export namespace Prisma {
     name: "Category"
     objects: {
       posts: Prisma.$PostPayload<ExtArgs>[]
+      tags: Prisma.$TagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10766,6 +10778,7 @@ export namespace Prisma {
   export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     posts<T extends Category$postsArgs<ExtArgs> = {}>(args?: Subset<T, Category$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tags<T extends Category$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Category$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11211,6 +11224,30 @@ export namespace Prisma {
   }
 
   /**
+   * Category.tags
+   */
+  export type Category$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
    * Category without action
    */
   export type CategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11254,6 +11291,7 @@ export namespace Prisma {
     name: string | null
     order: number | null
     slug: string | null
+    categoryId: string | null
   }
 
   export type TagMaxAggregateOutputType = {
@@ -11261,6 +11299,7 @@ export namespace Prisma {
     name: string | null
     order: number | null
     slug: string | null
+    categoryId: string | null
   }
 
   export type TagCountAggregateOutputType = {
@@ -11268,6 +11307,7 @@ export namespace Prisma {
     name: number
     order: number
     slug: number
+    categoryId: number
     _all: number
   }
 
@@ -11285,6 +11325,7 @@ export namespace Prisma {
     name?: true
     order?: true
     slug?: true
+    categoryId?: true
   }
 
   export type TagMaxAggregateInputType = {
@@ -11292,6 +11333,7 @@ export namespace Prisma {
     name?: true
     order?: true
     slug?: true
+    categoryId?: true
   }
 
   export type TagCountAggregateInputType = {
@@ -11299,6 +11341,7 @@ export namespace Prisma {
     name?: true
     order?: true
     slug?: true
+    categoryId?: true
     _all?: true
   }
 
@@ -11393,6 +11436,7 @@ export namespace Prisma {
     name: string
     order: number
     slug: string
+    categoryId: string
     _count: TagCountAggregateOutputType | null
     _avg: TagAvgAggregateOutputType | null
     _sum: TagSumAggregateOutputType | null
@@ -11419,6 +11463,8 @@ export namespace Prisma {
     name?: boolean
     order?: boolean
     slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     posts?: boolean | Tag$postsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
@@ -11428,6 +11474,8 @@ export namespace Prisma {
     name?: boolean
     order?: boolean
     slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
   export type TagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11435,6 +11483,8 @@ export namespace Prisma {
     name?: boolean
     order?: boolean
     slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
   export type TagSelectScalar = {
@@ -11442,19 +11492,26 @@ export namespace Prisma {
     name?: boolean
     order?: boolean
     slug?: boolean
+    categoryId?: boolean
   }
 
-  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug", ExtArgs["result"]["tag"]>
+  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug" | "categoryId", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     posts?: boolean | Tag$postsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type TagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+  export type TagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
 
   export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Tag"
     objects: {
+      category: Prisma.$CategoryPayload<ExtArgs>
       posts: Prisma.$PostPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11462,6 +11519,7 @@ export namespace Prisma {
       name: string
       order: number
       slug: string
+      categoryId: string
     }, ExtArgs["result"]["tag"]>
     composites: {}
   }
@@ -11856,6 +11914,7 @@ export namespace Prisma {
    */
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     posts<T extends Tag$postsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -11890,6 +11949,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Tag", 'String'>
     readonly order: FieldRef<"Tag", 'Int'>
     readonly slug: FieldRef<"Tag", 'String'>
+    readonly categoryId: FieldRef<"Tag", 'String'>
   }
     
 
@@ -12139,6 +12199,10 @@ export namespace Prisma {
      */
     data: TagCreateManyInput | TagCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12209,6 +12273,10 @@ export namespace Prisma {
      * Limit how many Tags to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13496,7 +13564,8 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     order: 'order',
-    slug: 'slug'
+    slug: 'slug',
+    categoryId: 'categoryId'
   };
 
   export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
@@ -14179,6 +14248,7 @@ export namespace Prisma {
     order?: IntFilter<"Category"> | number
     slug?: StringFilter<"Category"> | string
     posts?: PostListRelationFilter
+    tags?: TagListRelationFilter
   }
 
   export type CategoryOrderByWithRelationInput = {
@@ -14187,6 +14257,7 @@ export namespace Prisma {
     order?: SortOrder
     slug?: SortOrder
     posts?: PostOrderByRelationAggregateInput
+    tags?: TagOrderByRelationAggregateInput
   }
 
   export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -14198,6 +14269,7 @@ export namespace Prisma {
     NOT?: CategoryWhereInput | CategoryWhereInput[]
     order?: IntFilter<"Category"> | number
     posts?: PostListRelationFilter
+    tags?: TagListRelationFilter
   }, "id" | "name" | "slug">
 
   export type CategoryOrderByWithAggregationInput = {
@@ -14230,6 +14302,8 @@ export namespace Prisma {
     name?: StringFilter<"Tag"> | string
     order?: IntFilter<"Tag"> | number
     slug?: StringFilter<"Tag"> | string
+    categoryId?: StringFilter<"Tag"> | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     posts?: PostListRelationFilter
   }
 
@@ -14238,6 +14312,8 @@ export namespace Prisma {
     name?: SortOrder
     order?: SortOrder
     slug?: SortOrder
+    categoryId?: SortOrder
+    category?: CategoryOrderByWithRelationInput
     posts?: PostOrderByRelationAggregateInput
   }
 
@@ -14249,6 +14325,8 @@ export namespace Prisma {
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
     order?: IntFilter<"Tag"> | number
+    categoryId?: StringFilter<"Tag"> | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     posts?: PostListRelationFilter
   }, "id" | "name" | "slug">
 
@@ -14257,6 +14335,7 @@ export namespace Prisma {
     name?: SortOrder
     order?: SortOrder
     slug?: SortOrder
+    categoryId?: SortOrder
     _count?: TagCountOrderByAggregateInput
     _avg?: TagAvgOrderByAggregateInput
     _max?: TagMaxOrderByAggregateInput
@@ -14272,6 +14351,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Tag"> | string
     order?: IntWithAggregatesFilter<"Tag"> | number
     slug?: StringWithAggregatesFilter<"Tag"> | string
+    categoryId?: StringWithAggregatesFilter<"Tag"> | string
   }
 
   export type ProfileWhereInput = {
@@ -14943,6 +15023,7 @@ export namespace Prisma {
     order?: number
     slug: string
     posts?: PostCreateNestedManyWithoutCategoriesInput
+    tags?: TagCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateInput = {
@@ -14951,6 +15032,7 @@ export namespace Prisma {
     order?: number
     slug: string
     posts?: PostUncheckedCreateNestedManyWithoutCategoriesInput
+    tags?: TagUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUpdateInput = {
@@ -14959,6 +15041,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
     posts?: PostUpdateManyWithoutCategoriesNestedInput
+    tags?: TagUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateInput = {
@@ -14967,6 +15050,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
     posts?: PostUncheckedUpdateManyWithoutCategoriesNestedInput
+    tags?: TagUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryCreateManyInput = {
@@ -14995,6 +15079,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    category: CategoryCreateNestedOneWithoutTagsInput
     posts?: PostCreateNestedManyWithoutTagsInput
   }
 
@@ -15003,6 +15088,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    categoryId: string
     posts?: PostUncheckedCreateNestedManyWithoutTagsInput
   }
 
@@ -15011,6 +15097,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    category?: CategoryUpdateOneRequiredWithoutTagsNestedInput
     posts?: PostUpdateManyWithoutTagsNestedInput
   }
 
@@ -15019,6 +15106,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
     posts?: PostUncheckedUpdateManyWithoutTagsNestedInput
   }
 
@@ -15027,6 +15115,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    categoryId: string
   }
 
   export type TagUpdateManyMutationInput = {
@@ -15041,6 +15130,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProfileCreateInput = {
@@ -15656,11 +15746,17 @@ export namespace Prisma {
     order?: SortOrder
   }
 
+  export type CategoryScalarRelationFilter = {
+    is?: CategoryWhereInput
+    isNot?: CategoryWhereInput
+  }
+
   export type TagCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     order?: SortOrder
     slug?: SortOrder
+    categoryId?: SortOrder
   }
 
   export type TagAvgOrderByAggregateInput = {
@@ -15672,6 +15768,7 @@ export namespace Prisma {
     name?: SortOrder
     order?: SortOrder
     slug?: SortOrder
+    categoryId?: SortOrder
   }
 
   export type TagMinOrderByAggregateInput = {
@@ -15679,6 +15776,7 @@ export namespace Prisma {
     name?: SortOrder
     order?: SortOrder
     slug?: SortOrder
+    categoryId?: SortOrder
   }
 
   export type TagSumOrderByAggregateInput = {
@@ -16370,10 +16468,24 @@ export namespace Prisma {
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
+  export type TagCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
   export type PostUncheckedCreateNestedManyWithoutCategoriesInput = {
     create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
     connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
   export type PostUpdateManyWithoutCategoriesNestedInput = {
@@ -16389,6 +16501,20 @@ export namespace Prisma {
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
+  export type TagUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCategoryInput | TagUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCategoryInput | TagUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCategoryInput | TagUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
   export type PostUncheckedUpdateManyWithoutCategoriesNestedInput = {
     create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
     connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
@@ -16402,6 +16528,26 @@ export namespace Prisma {
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
+  export type TagUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCategoryInput | TagUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCategoryInput | TagUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCategoryInput | TagUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type CategoryCreateNestedOneWithoutTagsInput = {
+    create?: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutTagsInput
+    connect?: CategoryWhereUniqueInput
+  }
+
   export type PostCreateNestedManyWithoutTagsInput = {
     create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
     connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
@@ -16412,6 +16558,14 @@ export namespace Prisma {
     create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
     connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type CategoryUpdateOneRequiredWithoutTagsNestedInput = {
+    create?: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutTagsInput
+    upsert?: CategoryUpsertWithoutTagsInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutTagsInput, CategoryUpdateWithoutTagsInput>, CategoryUncheckedUpdateWithoutTagsInput>
   }
 
   export type PostUpdateManyWithoutTagsNestedInput = {
@@ -17275,6 +17429,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    tags?: TagCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutPostsInput = {
@@ -17282,6 +17437,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    tags?: TagUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutPostsInput = {
@@ -17294,6 +17450,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    category: CategoryCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutPostsInput = {
@@ -17301,6 +17458,7 @@ export namespace Prisma {
     name: string
     order?: number
     slug: string
+    categoryId: string
   }
 
   export type TagCreateOrConnectWithoutPostsInput = {
@@ -17433,6 +17591,7 @@ export namespace Prisma {
     name?: StringFilter<"Tag"> | string
     order?: IntFilter<"Tag"> | number
     slug?: StringFilter<"Tag"> | string
+    categoryId?: StringFilter<"Tag"> | string
   }
 
   export type UserCreateWithoutCommentInput = {
@@ -18016,6 +18175,32 @@ export namespace Prisma {
     create: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput>
   }
 
+  export type TagCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagUncheckedCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostUncheckedCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagCreateOrConnectWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type TagCreateManyCategoryInputEnvelope = {
+    data: TagCreateManyCategoryInput | TagCreateManyCategoryInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PostUpsertWithWhereUniqueWithoutCategoriesInput = {
     where: PostWhereUniqueInput
     update: XOR<PostUpdateWithoutCategoriesInput, PostUncheckedUpdateWithoutCategoriesInput>
@@ -18030,6 +18215,43 @@ export namespace Prisma {
   export type PostUpdateManyWithWhereWithoutCategoriesInput = {
     where: PostScalarWhereInput
     data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutCategoriesInput>
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutCategoryInput, TagUncheckedUpdateWithoutCategoryInput>
+    create: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutCategoryInput, TagUncheckedUpdateWithoutCategoryInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutCategoryInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutCategoryInput>
+  }
+
+  export type CategoryCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostCreateNestedManyWithoutCategoriesInput
+  }
+
+  export type CategoryUncheckedCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostUncheckedCreateNestedManyWithoutCategoriesInput
+  }
+
+  export type CategoryCreateOrConnectWithoutTagsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
   }
 
   export type PostCreateWithoutTagsInput = {
@@ -18067,6 +18289,33 @@ export namespace Prisma {
   export type PostCreateOrConnectWithoutTagsInput = {
     where: PostWhereUniqueInput
     create: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput>
+  }
+
+  export type CategoryUpsertWithoutTagsInput = {
+    update: XOR<CategoryUpdateWithoutTagsInput, CategoryUncheckedUpdateWithoutTagsInput>
+    create: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutTagsInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutTagsInput, CategoryUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type CategoryUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUpdateManyWithoutCategoriesNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutCategoriesNestedInput
   }
 
   export type PostUpsertWithWhereUniqueWithoutTagsInput = {
@@ -18518,6 +18767,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutPostsInput = {
@@ -18525,6 +18775,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateManyWithoutPostsInput = {
@@ -18539,6 +18790,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    category?: CategoryUpdateOneRequiredWithoutTagsNestedInput
   }
 
   export type TagUncheckedUpdateWithoutPostsInput = {
@@ -18546,6 +18798,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TagUncheckedUpdateManyWithoutPostsInput = {
@@ -18553,6 +18806,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
   }
 
   export type CommentCreateManyParentInput = {
@@ -18639,6 +18893,13 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type TagCreateManyCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+  }
+
   export type PostUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
@@ -18682,6 +18943,29 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
   }
 
   export type PostUpdateWithoutTagsInput = {

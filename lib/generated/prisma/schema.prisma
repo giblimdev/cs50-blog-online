@@ -1,3 +1,4 @@
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -8,129 +9,158 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model account {
-  id                       String    @id
-  scope                    String?
-  password                 String?
-  access_token             String?
-  access_token_expires_at  DateTime?
-  account_id               String
-  created_at               DateTime  @default(now())
-  id_token                 String?
-  provider_id              String
-  refresh_token            String?
-  refresh_token_expires_at DateTime?
-  updated_at               DateTime
-  user_id                  String
-  user                     user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+model User {
+  id               String   @id @default(cuid())
+  name             String
+  email            String   @unique
+  emailVerified    Boolean  @default(false)
+  image            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  twoFactorEnabled Boolean  @default(false)
+
+  sessions Session[]
+  accounts Account[]
+  Post     Post[]
+  Comment  Comment[]
+  Image    Image[]
+  Profile  Profile[]
+
+  @@map("user")
 }
 
-model category {
-  id    String @id
-  name  String @unique
-  order Int    @default(10)
-  slug  String @unique
-  post  post[] @relation("PostCategories")
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
 }
 
-model comment {
-  id            String    @id
-  content       String
-  order         Int       @default(10)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime
-  post_id       String
-  author_id     String
-  parent_id     String?
-  user          user      @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  comment       comment?  @relation("commentTocomment", fields: [parent_id], references: [id], onDelete: Cascade)
-  other_comment comment[] @relation("commentTocomment")
-  post          post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  image         image[]
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
 }
 
-model image {
-  id         String   @id
-  url        String
-  order      Int      @default(10)
-  alt        String?
-  created_at DateTime @default(now())
-  post_id    String?
-  user_id    String?
-  comment_id String?
-  comment    comment? @relation(fields: [comment_id], references: [id], onDelete: Cascade)
-  post       post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user       user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model post {
-  id         String     @id
-  slug       String     @unique
-  title      String
-  order      Int        @default(10)
-  excerpt    String?
-  content    String
-  published  Boolean    @default(false)
-  created_at DateTime   @default(now())
-  updated_at DateTime
-  author_id  String
-  comment    comment[]
-  image      image[]
-  user       user       @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  category   category[] @relation("PostCategories")
-  tag        tag[]      @relation("PostTags")
-}
-
-model profile {
-  id         String  @id
-  first_name String
-  bio        String?
-  user_id    String  @unique
-  user       user    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model session {
-  id         String   @id
-  token      String   @unique
-  created_at DateTime @default(now())
-  expires_at DateTime
-  ip_address String?
-  updated_at DateTime
-  user_agent String?
-  user_id    String
-  user       user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model tag {
-  id    String @id
-  name  String @unique
-  order Int    @default(10)
-  slug  String @unique
-  post  post[] @relation("PostTags")
-}
-
-model user {
-  id            String    @id
-  name          String
-  email         String    @unique
-  emailVerified Boolean
-  image         String?
-  role          String?   @default("USER")
-  created_at    DateTime  @default(now())
-  updated_at    DateTime
-  account       account[]
-  comment       comment[]
-  images        image[]
-  post          post[]
-  profile       profile?
-  session       session[]
-}
-
-model verification {
-  id         String    @id
+model Verification {
+  id         String    @id @default(cuid())
   identifier String
   value      String
-  created_at DateTime? @default(now())
-  expires_at DateTime
-  updated_at DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  order     Int      @default(10)
+  excerpt   String?
+  content   String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+
+  comments   Comment[]
+  images     Image[]
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories Category[] @relation("PostCategories")
+  tags       Tag[]      @relation("PostTags")
+
+  @@map("post")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  order     Int      @default(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  postId    String
+  authorId  String
+  parentId  String?
+
+  author  User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  images  Image[]
+
+  @@map("comment")
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  order     Int      @default(10)
+  alt       String?
+  createdAt DateTime @default(now())
+  postId    String?
+  userId    String?
+  commentId String?
+
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("image")
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  order Int    @default(10)
+  slug  String @unique
+
+  posts Post[] @relation("PostCategories")
+  tags  Tag[]  @relation("CategoryTags")
+
+  @@map("category")
+}
+
+model Tag {
+  id         String @id @default(cuid())
+  name       String @unique
+  order      Int    @default(10)
+  slug       String @unique
+  categoryId String
+
+  category Category @relation("CategoryTags", fields: [categoryId], references: [id], onDelete: Cascade)
+  posts    Post[]   @relation("PostTags")
+
+  @@map("tag")
+}
+
+model Profile {
+  id        String  @id @default(cuid())
+  firstName String
+  bio       String?
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profile")
 }
