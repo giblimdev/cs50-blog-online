@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,18 +25,11 @@ export function LoginForm() {
         password,
       });
       toast.success("Connexion réussie !");
+      router.push("/welcome");
     } catch (error) {
       toast.error("Erreur lors de la connexion");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    try {
-      await signIn.social({ provider: "github" });
-    } catch (error) {
-      toast.error("Erreur lors de la connexion avec GitHub");
     }
   };
 
@@ -63,16 +58,6 @@ export function LoginForm() {
             {isLoading ? "Connexion..." : "Se connecter"}
           </Button>
         </form>
-
-        <div className="text-center text-sm text-gray-500">ou</div>
-
-        <Button
-          variant="outline"
-          onClick={handleGithubLogin}
-          className="w-full"
-        >
-          Continuer avec GitHub
-        </Button>
       </CardContent>
     </Card>
   );

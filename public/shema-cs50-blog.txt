@@ -135,17 +135,22 @@ model Category {
   name  String @unique
   order Int    @default(10)
   slug  String @unique
+
   posts Post[] @relation("PostCategories")
+  tags  Tag[]  @relation("CategoryTags")
 
   @@map("category")
 }
 
 model Tag {
-  id    String @id @default(cuid())
-  name  String @unique
-  order Int    @default(10)
-  slug  String @unique
-  posts Post[] @relation("PostTags")
+  id         String @id @default(cuid())
+  name       String @unique
+  order      Int    @default(10)
+  slug       String @unique
+  categoryId String
+
+  category Category @relation("CategoryTags", fields: [categoryId], references: [id], onDelete: Cascade)
+  posts    Post[]   @relation("PostTags")
 
   @@map("tag")
 }
@@ -157,5 +162,5 @@ model Profile {
   userId    String  @unique
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("profile")
+  @@map("profile") 
 }
