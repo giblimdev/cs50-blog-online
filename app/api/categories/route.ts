@@ -1,5 +1,4 @@
-//@/app/api/categories/route.ts
-
+// //@/app/api/categories/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -14,8 +13,7 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            posts: true,
-            tags: true
+            posts: true
           }
         }
       }
@@ -35,7 +33,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name } = body;
+    const { name, order = 10 } = body;
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json(
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        order: body.order || 10
+        order: Number(order) || 10
       }
     });
 
@@ -158,7 +156,7 @@ export async function PUT(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        ...(order !== undefined && { order })
+        ...(order !== undefined && { order: Number(order) })
       }
     });
 
@@ -191,8 +189,7 @@ export async function DELETE(request: NextRequest) {
       include: {
         _count: {
           select: {
-            posts: true,
-            tags: true
+            posts: true
           }
         }
       }
@@ -205,17 +202,10 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Check if the category has associated posts or tags
+    // Check if the category has associated posts
     if (existingCategory._count.posts > 0) {
       return NextResponse.json(
         { error: "Cannot delete a category that contains posts" },
-        { status: 409 }
-      );
-    }
-
-    if (existingCategory._count.tags > 0) {
-      return NextResponse.json(
-        { error: "Cannot delete a category that contains tags" },
         { status: 409 }
       );
     }

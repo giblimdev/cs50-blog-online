@@ -1,3 +1,4 @@
+// //@/app/api/tags/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -10,13 +11,6 @@ export async function GET() {
         { name: 'asc' }
       ],
       include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true
-          }
-        },
         _count: {
           select: {
             posts: true
@@ -39,31 +33,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, categoryId } = body;
+    const { name, order = 10 } = body;
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json(
         { error: "Tag name is required" },
         { status: 400 }
-      );
-    }
-
-    if (!categoryId || typeof categoryId !== 'string') {
-      return NextResponse.json(
-        { error: "Category ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Check if the category exists
-    const categoryExists = await prisma.category.findUnique({
-      where: { id: categoryId }
-    });
-
-    if (!categoryExists) {
-      return NextResponse.json(
-        { error: "The specified category does not exist" },
-        { status: 404 }
       );
     }
 
@@ -98,17 +73,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        categoryId,
-        order: body.order || 10
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true
-          }
-        }
+        order: Number(order) || 10
       }
     });
 
@@ -126,7 +91,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, order } = body;
+    const { id, name, order } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -152,20 +117,6 @@ export async function PUT(request: NextRequest) {
         { error: "Tag not found" },
         { status: 404 }
       );
-    }
-
-    // If categoryId is provided, check that the category exists
-    if (categoryId && categoryId !== existingTag.categoryId) {
-      const categoryExists = await prisma.category.findUnique({
-        where: { id: categoryId }
-      });
-
-      if (!categoryExists) {
-        return NextResponse.json(
-          { error: "The specified category does not exist" },
-          { status: 404 }
-        );
-      }
     }
 
     // Generate the new slug
@@ -205,17 +156,7 @@ export async function PUT(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        ...(categoryId && { categoryId }),
-        ...(order !== undefined && { order })
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true
-          }
-        }
+        ...(order !== undefined && { order: Number(order) })
       }
     });
 

@@ -1,7 +1,6 @@
-// /api/posts/route.ts
-
+// //@/app/api/posts/route.ts
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // your Prisma client import
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -105,9 +104,21 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate images format if provided
+    if (images && Array.isArray(images)) {
+      for (const image of images) {
+        if (!image.url || typeof image.url !== "string") {
+          return NextResponse.json(
+            { message: "Each image must have a valid URL." },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Check slug uniqueness
     const existingPost = await prisma.post.findUnique({
-      where: { slug },
+      where: { slug: slug.trim() },
     });
 
     if (existingPost) {
@@ -166,7 +177,7 @@ export async function POST(request: Request) {
           excerpt: excerpt?.trim() || null,
           content: content.trim(),
           published: Boolean(published),
-          order: order || 10,
+          order: Number(order) || 10,
           authorId: authorId,
           categories:
             categoryIds && categoryIds.length > 0
@@ -206,13 +217,15 @@ export async function POST(request: Request) {
       });
 
       // Create related images if provided
-      if (images && images.length > 0) {
+      if (images && Array.isArray(images) && images.length > 0) {
         await tx.image.createMany({
           data: images.map((image: any, index: number) => ({
             url: image.url,
             alt: image.alt || null,
-            order: image.order || index + 1,
+            order: Number(image.order) || index + 1,
             postId: post.id,
+            // userId is optional in the schema, so we don't include it unless provided
+            ...(image.userId && { userId: image.userId }),
           })),
         });
 

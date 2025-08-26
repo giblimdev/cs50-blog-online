@@ -1,8 +1,7 @@
 // @/components/posts/PostForm.tsx
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,9 +13,10 @@ import CategoryForm from "@/components/CategoryForm";
 import TagForm from "@/components/TagForm";
 import { Category } from "@/utils/getCategory";
 import { Tag } from "@/utils/getTag";
+import { useSession } from "@/lib/auth/auth-client"; 
 
 interface ImageData {
-  url: string; // base64
+  url: string;
   alt?: string;
   order: number;
 }
@@ -40,6 +40,7 @@ interface PostFormProps {
 
 export default function PostForm({ initialData, mode = "create" }: PostFormProps) {
   const router = useRouter();
+  const { data: session, isPending } = useSession(); // Remplacez status par isPending
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || "",
@@ -48,10 +49,18 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
     content: initialData?.content || "",
     published: initialData?.published || false,
     order: initialData?.order || 10,
-    categoryIds: initialData?.categoryIds || [],
+    categoryIds: initialData?.categoryIds || [], 
     tagIds: initialData?.tagIds || [],
     images: initialData?.images || [],
   });
+
+  // Vérifier que l'utilisateur est connecté
+  useEffect(() => {
+    if (!isPending && !session) { // Vérifiez si la session est chargée et si l'utilisateur n'est pas connecté
+      toast.error("You must be logged in to create or edit posts");
+      router.push("/login");
+    }
+  }, [session, isPending, router]); // Ajoutez session et isPending aux dépendances
 
   // Automatic slug generation from the title
   const generateSlug = (title: string) => {
@@ -220,6 +229,12 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       return;
     }
 
+    // Vérifier que l'utilisateur est connecté
+    if (!session?.user?.id) {
+      toast.error("You must be logged in to create or edit posts");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -229,10 +244,16 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       
       const method = mode === "edit" ? "PUT" : "POST";
 
+      // Préparer les données à envoyer, en incluant l'authorId
+      const postData = {
+        ...formData,
+        authorId: session.user.id // Ajouter l'authorId depuis la session
+      };
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(postData),
       });
 
       if (res.ok) {
@@ -251,6 +272,14 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       setIsLoading(false);
     }
   };
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return null; // Redirection gérée par useEffect
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">

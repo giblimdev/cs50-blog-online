@@ -1,3 +1,4 @@
+//@/components/CategoryForm.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getCategories, Category } from "@/utils/getCategory";
+import { useSession } from "@/lib/auth/auth-client"; 
 
 interface CategoryFormProps {
   selected: string[];
@@ -27,6 +29,8 @@ export default function CategoryForm({
 }: CategoryFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState("");
+  const [newCategoryOrder, setNewCategoryOrder] = useState(10);
+  const { data: session } = useSession(); // Récupération de la session
 
   useEffect(() => {
     (async () => {
@@ -36,20 +40,33 @@ export default function CategoryForm({
 
   const handleAdd = async () => {
     if (!newCategory.trim()) return;
+    
+    // Vérification si l'utilisateur est connecté
+    if (!session?.user?.id) {
+      toast.error("You must be logged in to create a category");
+      return;
+    }
+
     try {
       const res = await fetch("/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCategory }),
+        body: JSON.stringify({ 
+          name: newCategory, 
+          order: newCategoryOrder,
+          authorId: session.user.id
+        }),
       });
       if (res.ok) {
         const cat = await res.json();
         setCategories((prev) => [...prev, cat]);
         onNewCategory?.(cat);
         setNewCategory("");
+        setNewCategoryOrder(10);
         toast.success("Category added");
       } else {
-        toast.error("Error creating category");
+        const error = await res.json();
+        toast.error(error.error || "Error creating category");
       }
     } catch {
       toast.error("Server error");
@@ -57,7 +74,7 @@ export default function CategoryForm({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       <Label>Categories</Label>
       <Select onValueChange={(val) => onToggle(val)}>
         <SelectTrigger>
@@ -72,28 +89,48 @@ export default function CategoryForm({
         </SelectContent>
       </Select>
 
-      <div className="flex gap-2 mt-2">
-        <Input
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="New category"
-        />
-        <Button onClick={handleAdd}>Add</Button>
+      <div className="space-y-2 mt-4">
+        <Label>Add New Category</Label>
+        <div className="flex gap-2">
+          <Input
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Category name"
+            className="flex-1"
+          />
+          <Input
+            type="number"
+            value={newCategoryOrder}
+            onChange={(e) => setNewCategoryOrder(Number(e.target.value))}
+            placeholder="Order"
+            className="w-20"
+          />
+          <Button onClick={handleAdd}>Add</Button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {selected.map((id) => {
-          const cat = categories.find((c) => c.id === id);
-          return (
-            <span
-              key={id}
-              className="px-2 py-1 bg-primary/10 rounded text-xs cursor-pointer"
-              onClick={() => onToggle(id)}
-            >
-              {cat?.name || id} ✕
+      <div className="mt-4">
+        <Label>Selected Categories</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {selected.length === 0 ? (
+            <span className="text-sm text-muted-foreground">
+              No categories selected
             </span>
-          );
-        })}
+          ) : (
+            selected.map((id) => {
+              const cat = categories.find((c) => c.id === id);
+              return (
+                <span
+                  key={id}
+                  className="px-2 py-1 bg-primary/10 rounded text-xs cursor-pointer hover:bg-primary/20 transition-colors"
+                  onClick={() => onToggle(id)}
+                >
+                  {cat?.name || id} ✕
+                </span>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

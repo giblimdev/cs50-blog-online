@@ -108,8 +108,7 @@ model Comment {
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies Comment[] @relation("CommentReplies")
   post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  images  Image[]
-
+  
   @@map("comment")
 }
 
@@ -121,9 +120,7 @@ model Image {
   createdAt DateTime @default(now())
   postId    String?
   userId    String?
-  commentId String?
-
-  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  
   post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -137,7 +134,7 @@ model Category {
   slug  String @unique
 
   posts Post[] @relation("PostCategories")
-  tags  Tag[]  @relation("CategoryTags")
+  
 
   @@map("category")
 }
@@ -147,9 +144,6 @@ model Tag {
   name       String @unique
   order      Int    @default(10)
   slug       String @unique
-  categoryId String
-
-  category Category @relation("CategoryTags", fields: [categoryId], references: [id], onDelete: Cascade)
   posts    Post[]   @relation("PostTags")
 
   @@map("tag")

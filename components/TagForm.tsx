@@ -35,12 +35,12 @@ export default function TagForm({ selected, onToggle, onNewTag }: TagFormProps) 
   }, []);
 
   const handleAdd = async () => {
-    if (!newTag.trim() || !catForTag) return;
+    if (!newTag.trim()) return;
     try {
       const res = await fetch("/api/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newTag, categoryId: catForTag }),
+        body: JSON.stringify({ name: newTag }),
       });
       if (res.ok) {
         const tag = await res.json();
@@ -66,8 +66,7 @@ export default function TagForm({ selected, onToggle, onNewTag }: TagFormProps) 
         <SelectContent>
           {tags.map((tag) => (
             <SelectItem key={tag.id} value={tag.id}>
-              {tag.name} (
-              {categories.find((c) => c.id === tag.categoryId)?.name || "?"})
+              {tag.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -79,18 +78,6 @@ export default function TagForm({ selected, onToggle, onNewTag }: TagFormProps) 
           onChange={(e) => setNewTag(e.target.value)}
           placeholder="New tag"
         />
-        <Select onValueChange={(val) => setCatForTag(val)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Tag's category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Button onClick={handleAdd}>Add</Button>
       </div>
 
