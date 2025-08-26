@@ -1,4 +1,6 @@
 // app/not-found.tsx
+// Custom 404 page – English version, modern UI with shadcn/ui and lucide-react
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,13 +33,11 @@ export default function NotFound() {
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-8 mb-4">
-              Page Not Found
+              Page not found
             </h1>
 
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              Oops! Il semblerait que cette page ait disparu dans le
-              cyberespace. Mais ne vous inquiétez pas, nous avons plein d'autres
-              contenus passionnants à vous proposer !
+              Oops! It looks like this page has vanished into cyberspace. But don't worry, you can discover plenty of other interesting content here!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -48,14 +48,14 @@ export default function NotFound() {
               >
                 <Link href="/">
                   <Home className="mr-2 h-5 w-5" />
-                  Retour à l'accueil
+                  Back to homepage
                 </Link>
               </Button>
 
               <Button asChild variant="outline" size="lg">
                 <Link href="/blog">
                   <BookOpen className="mr-2 h-5 w-5" />
-                  Parcourir le blog
+                  Browse the blog
                 </Link>
               </Button>
             </div>

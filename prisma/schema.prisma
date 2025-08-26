@@ -164,3 +164,13 @@ model Profile {
 
   @@map("profile")
 }
+model helpDev {
+  id                   String   @id @default(uuid()) @db.Uuid
+  titre                String
+  presentationProjet   String?
+  section              Json[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("helpDev")
+}

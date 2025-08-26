@@ -25,11 +25,11 @@ export function LoginForm() {
         password,
       });
       toast.success("Connexion réussie !");
-      router.push("/welcome");
+      router.push("/public/welcome");
     } catch (error) {
       toast.error("Erreur lors de la connexion");
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); 
     }
   };
 
