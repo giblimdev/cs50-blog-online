@@ -7,7 +7,7 @@ export interface Tag {
   _count?: {
     posts: number;
   };
-}
+} 
 
 export async function getTags(): Promise<Tag[]> {
   try {
@@ -38,3 +38,4 @@ export async function getTags(): Promise<Tag[]> {
     return [];
   }
 }
+ 

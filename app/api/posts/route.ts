@@ -1,174 +1,125 @@
-// //@/app/api/posts/route.ts
-import { NextResponse } from "next/server";
+// @/app/api/posts/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from 'next/cache';
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
 
-export async function GET() {
+// GET : récupérer les posts publiés
+export async function GET(request: NextRequest) {
   try {
-    // Retrieve published posts with categories, tags, and images
-    const posts = await prisma.post.findMany({
-      where: { published: true },
-      orderBy: { order: "asc" },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        published: true,
-        order: true,
-        createdAt: true,
-        updatedAt: true,
-        categories: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
+    const { searchParams } = new URL(request.url);
+
+    // Pagination
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "9")));
+    const skip = (page - 1) * limit;
+
+    // Filtres optionnels
+    const categorySlug = searchParams.get("category");
+    const tagSlug = searchParams.get("tag");
+
+    const whereCondition: any = { published: true };
+
+    if (categorySlug) {
+      whereCondition.categories = { some: { slug: categorySlug } };
+    }
+    if (tagSlug) {
+      whereCondition.tags = { some: { slug: tagSlug } };
+    }
+
+    const [posts, totalCount] = await Promise.all([
+      prisma.post.findMany({
+        where: whereCondition,
+        orderBy: { order: "asc" },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          excerpt: true,
+          published: true,
+          order: true,
+          createdAt: true,
+          updatedAt: true,
+          categories: { select: { id: true, name: true, slug: true } },
+          tags: { select: { id: true, name: true, slug: true } },
+          images: {
+            select: { id: true, url: true, alt: true, order: true },
+            orderBy: { order: "asc" },
           },
+          author: { select: { id: true, name: true } },
         },
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-        images: {
-          select: {
-            id: true,
-            url: true,
-            alt: true,
-            order: true,
-          },
-          orderBy: { order: "asc" },
-        },
-        author: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+      }),
+      prisma.post.count({ where: whereCondition }),
+    ]);
+
+    // Ajout du console.log pour voir le nombre de posts envoyés
+    console.log(`GET /api/posts: Envoi de ${posts.length} posts (total: ${totalCount}, page: ${page}, limite: ${limit})`);
+
+    return NextResponse.json({
+      posts,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+      hasNextPage: page < Math.ceil(totalCount / limit),
+      hasPreviousPage: page > 1,
+      filters: { category: categorySlug, tag: tagSlug },
+    }, {
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
       },
     });
-
-    return NextResponse.json(posts);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("GET /api/posts error:", error);
-    return NextResponse.json(
-      { message: "Error while retrieving posts." },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error while retrieving posts." }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+// POST : créer un post
+export async function POST(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: request.headers });
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ message: "Authentication required." }, { status: 401 });
+    }
+
     const data = await request.json();
-    const {
-      title,
-      slug,
-      excerpt,
-      content,
-      published,
-      order,
-      categoryIds,
-      tagIds,
-      images,
-      authorId,
-    } = data;
+    const { title, slug, excerpt, content, published, order, categoryIds, tagIds, images } = data;
+    const authorId = session.user.id;
 
-    // Validate required fields
-    if (!title || typeof title !== "string" || title.trim() === "") {
-      return NextResponse.json(
-        { message: "Title is required." },
-        { status: 400 }
-      );
-    }
+    if (!title?.trim()) return NextResponse.json({ message: "Title is required." }, { status: 400 });
+    if (!content?.trim()) return NextResponse.json({ message: "Content is required." }, { status: 400 });
+    if (!slug?.trim()) return NextResponse.json({ message: "Slug is required." }, { status: 400 });
 
-    if (!content || typeof content !== "string" || content.trim() === "") {
-      return NextResponse.json(
-        { message: "Content is required." },
-        { status: 400 }
-      );
-    }
-
-    if (!slug || typeof slug !== "string" || slug.trim() === "") {
-      return NextResponse.json(
-        { message: "Slug is required." },
-        { status: 400 }
-      );
-    }
-
-    if (!authorId || typeof authorId !== "string") {
-      return NextResponse.json(
-        { message: "Author ID is required." },
-        { status: 400 }
-      );
-    }
-
-    // Validate images format if provided
     if (images && Array.isArray(images)) {
       for (const image of images) {
         if (!image.url || typeof image.url !== "string") {
-          return NextResponse.json(
-            { message: "Each image must have a valid URL." },
-            { status: 400 }
-          );
+          return NextResponse.json({ message: "Each image must have a valid URL." }, { status: 400 });
         }
       }
     }
 
-    // Check slug uniqueness
-    const existingPost = await prisma.post.findUnique({
-      where: { slug: slug.trim() },
-    });
-
+    const existingPost = await prisma.post.findUnique({ where: { slug: slug.trim() } });
     if (existingPost) {
-      return NextResponse.json(
-        { message: "This slug is already in use." },
-        { status: 409 }
-      );
+      return NextResponse.json({ message: "This slug is already in use." }, { status: 409 });
     }
 
-    // Validate author existence
-    const author = await prisma.user.findUnique({
-      where: { id: authorId },
-    });
-
-    if (!author) {
-      return NextResponse.json(
-        { message: "Author not found." },
-        { status: 404 }
-      );
-    }
-
-    // Optional: validate categories
-    if (categoryIds && categoryIds.length > 0) {
-      const existingCategories = await prisma.category.findMany({
-        where: { id: { in: categoryIds } },
-      });
-
+    if (categoryIds?.length > 0) {
+      const existingCategories = await prisma.category.findMany({ where: { id: { in: categoryIds } } });
       if (existingCategories.length !== categoryIds.length) {
-        return NextResponse.json(
-          { message: "One or more categories do not exist." },
-          { status: 400 }
-        );
+        return NextResponse.json({ message: "One or more categories do not exist." }, { status: 400 });
       }
     }
 
-    // Optional: validate tags
-    if (tagIds && tagIds.length > 0) {
-      const existingTags = await prisma.tag.findMany({
-        where: { id: { in: tagIds } },
-      });
-
+    if (tagIds?.length > 0) {
+      const existingTags = await prisma.tag.findMany({ where: { id: { in: tagIds } } });
       if (existingTags.length !== tagIds.length) {
-        return NextResponse.json(
-          { message: "One or more tags do not exist." },
-          { status: 400 }
-        );
+        return NextResponse.json({ message: "One or more tags do not exist." }, { status: 400 });
       }
     }
 
-    // Create the post in a transaction for consistency
     const newPost = await prisma.$transaction(async (tx) => {
       const post = await tx.post.create({
         data: {
@@ -178,129 +129,72 @@ export async function POST(request: Request) {
           content: content.trim(),
           published: Boolean(published),
           order: Number(order) || 10,
-          authorId: authorId,
-          categories:
-            categoryIds && categoryIds.length > 0
-              ? {
-                  connect: categoryIds.map((id: string) => ({ id })),
-                }
-              : undefined,
-          tags:
-            tagIds && tagIds.length > 0
-              ? {
-                  connect: tagIds.map((id: string) => ({ id })),
-                }
-              : undefined,
+          authorId,
+          categories: categoryIds?.length
+            ? { connect: categoryIds.map((id: string) => ({ id })) }
+            : undefined,
+          tags: tagIds?.length
+            ? { connect: tagIds.map((id: string) => ({ id })) }
+            : undefined,
         },
         include: {
-          categories: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          tags: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          author: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          categories: { select: { id: true, name: true, slug: true } },
+          tags: { select: { id: true, name: true, slug: true } },
+          author: { select: { id: true, name: true } },
         },
       });
 
-      // Create related images if provided
-      if (images && Array.isArray(images) && images.length > 0) {
+      if (images?.length > 0) {
         await tx.image.createMany({
           data: images.map((image: any, index: number) => ({
             url: image.url,
             alt: image.alt || null,
             order: Number(image.order) || index + 1,
             postId: post.id,
-            // userId is optional in the schema, so we don't include it unless provided
-            ...(image.userId && { userId: image.userId }),
           })),
         });
 
-        // Fetch the post with images
-        const postWithImages = await tx.post.findUnique({
+        return tx.post.findUnique({
           where: { id: post.id },
           include: {
-            categories: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-            tags: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
+            categories: { select: { id: true, name: true, slug: true } },
+            tags: { select: { id: true, name: true, slug: true } },
             images: {
-              select: {
-                id: true,
-                url: true,
-                alt: true,
-                order: true,
-              },
+              select: { id: true, url: true, alt: true, order: true },
               orderBy: { order: "asc" },
             },
-            author: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+            author: { select: { id: true, name: true } },
           },
         });
-
-        return postWithImages;
       }
 
       return post;
     });
 
-    return NextResponse.json(newPost, { status: 201 });
-  } catch (error: unknown) {
-    console.error("POST /api/posts error:", error);
-
-    // Prisma specific error handling
-    const isPrismaError = (
-      err: unknown
-    ): err is { code: string; message?: string } => {
-      return typeof err === "object" && err !== null && "code" in err;
-    };
-
-    if (isPrismaError(error)) {
-      if (error.code === "P2002") {
-        return NextResponse.json(
-          { message: "A unique constraint was violated." },
-          { status: 409 }
-        );
+    try {
+      revalidatePath("/public/blog");
+      revalidatePath("/api/posts");
+      if (newPost?.published) {
+        revalidatePath(`/public/blog/${newPost.slug}`);
       }
-
-      if (error.code === "P2003") {
-        return NextResponse.json(
-          { message: "Invalid reference to a related entity." },
-          { status: 400 }
-        );
-      }
+    } catch (e) {
+      console.warn("Cache revalidation failed:", e);
     }
 
-    return NextResponse.json(
-      { message: "Error while creating the post." },
-      { status: 500 }
-    );
+    return NextResponse.json(newPost, { status: 201 });
+  } catch (error: any) {
+    console.error("POST /api/posts error:", error);
+
+    if (error.code === "P2002") {
+      return NextResponse.json({ message: "A unique constraint was violated." }, { status: 409 });
+    }
+    if (error.code === "P2003") {
+      return NextResponse.json({ message: "Invalid reference to a related entity." }, { status: 400 });
+    }
+    if (error.code === "P2025") {
+      return NextResponse.json({ message: "Record not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Error while creating the post." }, { status: 500 });
   }
-}
+} 

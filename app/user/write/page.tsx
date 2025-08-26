@@ -11,4 +11,4 @@ export default function WritePage() {
       </div>
     </div>
   );
-}
+} 

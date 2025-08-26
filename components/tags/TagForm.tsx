@@ -1,3 +1,4 @@
+//@/components/tags/TagForm.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -78,7 +79,10 @@ export default function TagForm({ selected, onToggle, onNewTag }: TagFormProps) 
           onChange={(e) => setNewTag(e.target.value)}
           placeholder="New tag"
         />
-        <Button onClick={handleAdd}>Add</Button>
+        {/* CORRECTION: Ajout de type="button" pour éviter la soumission du formulaire parent */}
+        <Button type="button" onClick={handleAdd}>
+          Add
+        </Button>
       </div>
 
       <div className="flex flex-wrap gap-2">

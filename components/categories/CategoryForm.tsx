@@ -30,7 +30,7 @@ export default function CategoryForm({
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState("");
   const [newCategoryOrder, setNewCategoryOrder] = useState(10);
-  const { data: session } = useSession(); // Récupération de la session
+  const { data: session } = useSession(); 
 
   useEffect(() => {
     (async () => {
@@ -41,7 +41,6 @@ export default function CategoryForm({
   const handleAdd = async () => {
     if (!newCategory.trim()) return;
     
-    // Vérification si l'utilisateur est connecté
     if (!session?.user?.id) {
       toast.error("You must be logged in to create a category");
       return;
@@ -105,7 +104,10 @@ export default function CategoryForm({
             placeholder="Order"
             className="w-20"
           />
-          <Button onClick={handleAdd}>Add</Button>
+          {/* CORRECTION: Ajout de type="button" pour éviter la soumission du formulaire parent */}
+          <Button type="button" onClick={handleAdd}>
+            Add
+          </Button>
         </div>
       </div>
 
@@ -132,6 +134,6 @@ export default function CategoryForm({
           )}
         </div>
       </div>
-    </div>
+    </div> 
   );
 }

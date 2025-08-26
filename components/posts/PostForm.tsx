@@ -9,13 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import CategoryForm from "@/components/CategoryForm";
-import TagForm from "@/components/TagForm";
+import CategoryForm from "@/components/categories/CategoryForm";
+import TagForm from "@/components/tags/TagForm";
 import { Category } from "@/utils/getCategory";
 import { Tag } from "@/utils/getTag";
 import { useSession } from "@/lib/auth/auth-client"; 
 
-interface ImageData {
+interface ImageData { 
   url: string;
   alt?: string;
   order: number;
@@ -58,7 +58,7 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
   useEffect(() => {
     if (!isPending && !session) { // Vérifiez si la session est chargée et si l'utilisateur n'est pas connecté
       toast.error("You must be logged in to create or edit posts");
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, [session, isPending, router]); // Ajoutez session et isPending aux dépendances
 
@@ -259,7 +259,7 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       if (res.ok) {
         const post = await res.json();
         toast.success(mode === "edit" ? "Post updated" : "Post created");
-        router.push(`/posts/${post.slug}`);
+        router.push(`/user/my-posts`); 
         router.refresh();
       } else {
         const error = await res.json();
@@ -278,7 +278,7 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
   }
 
   if (!session) {
-    return null; // Redirection gérée par useEffect
+    return null; 
   }
 
   return (

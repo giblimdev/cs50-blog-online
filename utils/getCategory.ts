@@ -21,7 +21,7 @@ export async function getCategories(): Promise<Category[]> {
     if (!res.ok) {
       console.error("❌ Failed to fetch categories - HTTP status:", res.status);
       throw new Error(`Failed to fetch categories: ${res.status} ${res.statusText}`);
-    }
+    } 
     
     const categories = await res.json();
     console.log("✅ Categories fetched successfully:", categories.length, "items");

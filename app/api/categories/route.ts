@@ -224,5 +224,6 @@ export async function DELETE(request: NextRequest) {
       { error: "Error deleting category" },
       { status: 500 }
     );
-  }
+  }  
 }
+ 
