@@ -164,7 +164,7 @@ export async function FeaturedPosts(): Promise<JSX.Element> {
           size="lg"
           className="text-sm sm:text-base"
         >
-          <Link href="/blog">
+          <Link href="/public/blog">
             View All Posts
             <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
           </Link>

@@ -4,6 +4,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Users, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -46,22 +47,22 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
-          >
+          ><Link href="/public/blog">
             <Button
               size="lg"
               className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-6 text-lg"
             >
               Start Reading
               <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
+            </Button></Link>
+             <Link href="/user/write"><Button
               size="lg"
               variant="outline"
               className="border-white text-blue-600 hover:bg-white font-semibold px-8 py-6 text-lg"
             >
               Write Your Story
               <BookOpen className="ml-2 h-5 w-5" />
-            </Button>
+            </Button></Link>
           </motion.div>
 
           <motion.div

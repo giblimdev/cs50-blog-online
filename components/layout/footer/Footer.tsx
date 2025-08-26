@@ -2,21 +2,21 @@ import React from 'react'
 
 export default function Footer() {
   return (
-    <div>{/* Footer optionnel pour les pages publiques */}
+    <div>{/* Optional footer for public pages */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* À propos */}
+            {/* About */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-                À propos
+                About
               </h3>
               <p className="text-sm text-gray-600">
-                CS50 Blog - Un blog moderne sur la programmation et le développement web.
+                CS50 Blog - A modern blog about programming and web development.
               </p>
             </div>
 
-            {/* Navigation rapide */}
+            {/* Quick Navigation */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
                 Navigation
@@ -24,46 +24,46 @@ export default function Footer() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
                   <a href="/" className="hover:text-blue-600 transition-colors">
-                    Accueil
+                    Home
                   </a>
                 </li>
                 <li>
                   <a href="/posts" className="hover:text-blue-600 transition-colors">
-                    Articles
+                    Posts
                   </a>
                 </li>
                 <li>
                   <a href="/categories" className="hover:text-blue-600 transition-colors">
-                    Catégories
+                    Categories
                   </a>
                 </li>
                 <li>
                   <a href="/about" className="hover:text-blue-600 transition-colors">
-                    À propos
+                    About
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Catégories populaires */}
+            {/* Popular Categories */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-                Catégories
+                Categories
               </h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
-                  <a href="/categories/programmation" className="hover:text-blue-600 transition-colors">
-                    Programmation
+                  <a href="/categories/programming" className="hover:text-blue-600 transition-colors">
+                    Programming
                   </a>
                 </li>
                 <li>
                   <a href="/categories/web-dev" className="hover:text-blue-600 transition-colors">
-                    Développement Web
+                    Web Development
                   </a>
                 </li>
                 <li>
-                  <a href="/categories/tutoriels" className="hover:text-blue-600 transition-colors">
-                    Tutoriels
+                  <a href="/categories/tutorials" className="hover:text-blue-600 transition-colors">
+                    Tutorials
                   </a>
                 </li>
                 <li>
@@ -74,10 +74,10 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Contact et légal */}
+            {/* Contact and Legal */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-                Légal
+                Legal
               </h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
@@ -87,17 +87,17 @@ export default function Footer() {
                 </li>
                 <li>
                   <a href="/privacy-policy" className="hover:text-blue-600 transition-colors">
-                    Confidentialité
+                    Privacy Policy
                   </a>
                 </li>
                 <li>
                   <a href="/terms" className="hover:text-blue-600 transition-colors">
-                    Conditions d'utilisation
+                    Terms of Use
                   </a>
                 </li>
                 <li>
                   <a href="/cookies" className="hover:text-blue-600 transition-colors">
-                    Gestion des cookies
+                    Cookie Management
                   </a>
                 </li>
               </ul>
@@ -108,7 +108,7 @@ export default function Footer() {
           <div className="border-t border-gray-200 mt-8 pt-6">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} CS50 Blog. Tous droits réservés.
+                © {new Date().getFullYear()} CS50 Blog. All rights reserved.
               </p>
               <div className="flex space-x-6 mt-4 md:mt-0">
                 <a
@@ -142,6 +142,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </footer></div>
+      </footer>
+    </div>
   )
 }

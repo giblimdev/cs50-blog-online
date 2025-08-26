@@ -55,7 +55,7 @@ export default function IsConnected() {
           className="justify-start lg:justify-center bg-blue-600 hover:bg-blue-700"
         >
           <Link href="/auth/login">
-            <span>Log In</span>
+            <span>Login</span>
           </Link>
         </Button>
       </div>
@@ -112,14 +112,14 @@ export default function IsConnected() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href="/profile" className="cursor-pointer">
+          <Link href="/user/profile" className="cursor-pointer">
             <UserCircle className="mr-2 h-4 w-4" />
             Profile
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/my-posts" className="cursor-pointer">
+          <Link href="/user/my-posts" className="cursor-pointer">
             <PenTool className="mr-2 h-4 w-4" />
             My Posts
           </Link>

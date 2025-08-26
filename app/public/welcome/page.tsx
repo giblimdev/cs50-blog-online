@@ -129,18 +129,18 @@ export default function WelcomePage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Link href="/write" className="w-full">
+                <Link href="/user/write" className="w-full">
                   <Button className="w-full">
                     <FileText className="w-4 h-4 mr-2" />
                     Write an article
                   </Button>
                 </Link>
-                <Link href="/my-posts" className="w-full">
+                <Link href="/user/my-posts" className="w-full">
                   <Button variant="outline" className="w-full">
                     My posts
                   </Button>
                 </Link>
-                <Link href="/profile" className="w-full">
+                <Link href="/user/profile" className="w-full">
                   <Button variant="outline" className="w-full">
                     Edit profile
                   </Button>
@@ -161,7 +161,7 @@ export default function WelcomePage() {
                   Explore all the features of your CS50 Blog
                 </p>
                 <div className="flex justify-center gap-4">
-                  <Link href="/write">
+                  <Link href="/user/write">
                     <Button>Create a post</Button>
                   </Link>
                 </div>

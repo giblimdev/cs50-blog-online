@@ -5,15 +5,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Search, User, LogOut, Settings, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/layout/header/Logo";
 import Nav from "@/components/layout/header/Nav";
 import IsConnected from "@/components/layout/header/IsConnected";
@@ -69,7 +60,7 @@ export default function Header() {
               size="sm"
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
-              <Link href="/write">
+              <Link href="/user//write">
                 <PenTool className="h-4 w-4 mr-2" />
                 Write
               </Link>
