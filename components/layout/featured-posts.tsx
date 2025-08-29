@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import PostCard from "@/components/posts/PostCard";
 
-// Types aligned with /app/api/posts/route.ts (GET)
 type ApiPost = {
   id: string;
   slug: string;
@@ -14,8 +13,8 @@ type ApiPost = {
   excerpt: string | null;
   published: boolean;
   order: number;
-  createdAt: string; // JSON -> string
-  updatedAt: string; // JSON -> string
+  createdAt: string; 
+  updatedAt: string; 
   categories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   images: { id: string; url: string; alt: string | null; order: number }[];
@@ -45,7 +44,6 @@ export function FeaturedPosts() {
         setLoading(true);
         setError(null);
 
-        // Limit to 6 posts to reproduce the previous behavior
         const res = await fetch(`/api/posts?limit=6`, {
           signal: controller.signal,
           headers: { accept: "application/json" },
@@ -80,8 +78,6 @@ export function FeaturedPosts() {
           Discover our latest and most engaging content from our community of writers
         </p>
       </div>
-
-      {/* Error state */}
       {error && (
         <div className="px-4 sm:px-0 text-red-600 text-sm mb-4">
           {error}
@@ -89,7 +85,6 @@ export function FeaturedPosts() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
-        {/* Loading skeletons */}
         {loading &&
           Array.from({ length: 6 }).map((_, i) => (
             <div
@@ -105,11 +100,9 @@ export function FeaturedPosts() {
             </div>
           ))}
 
-        {/* Posts list */}
         {!loading &&
           posts.map((post) => (
             <div key={post.id} className="group">
-              {/* PostCard expects a Post object with relations; the API fields are compatible */}
               <PostCard post={post as any} />
             </div>
           ))}
