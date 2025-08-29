@@ -2,6 +2,7 @@
 
 import PostCard from '@/components/posts/PostCard';
 
+// Types alignés avec /api/posts (dates en string)
 interface ApiPost {
   id: string;
   slug: string;
@@ -9,8 +10,8 @@ interface ApiPost {
   excerpt: string | null;
   published: boolean;
   order: number;
-  createdAt: string; 
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
   categories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   images: { id: string; url: string; alt: string | null; order: number }[];
@@ -27,7 +28,11 @@ interface ApiResponse {
   filters: { category: string | null; tag: string | null };
 }
 
+// Helper: normalise string | string[] | undefined -> string | undefined
+const first = (v: string | string[] | undefined): string | undefined =>
+  Array.isArray(v) ? v[0] : v ?? undefined; // typé explicitement
 
+// URL de base (si on choisit de fetch l’API côté serveur)
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL!;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
@@ -36,14 +41,19 @@ function getBaseUrl() {
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
-
+// Récupération via Route Handler (garde l’API actuelle)
 async function getPosts(sp: SearchParams): Promise<ApiResponse> {
   const params = new URLSearchParams();
 
-  if (sp.page) params.set('page', String(sp.page));
-  if (sp.limit) params.set('limit', String(sp.limit));
-  if (sp.category) params.set('category', String(sp.category));
-  if (sp.tag) params.set('tag', String(sp.tag));
+  const page = first(sp.page);
+  const limit = first(sp.limit);
+  const category = first(sp.category);
+  const tag = first(sp.tag);
+
+  if (page) params.set('page', page);           // string OK
+  if (limit) params.set('limit', limit);        // string OK
+  if (category) params.set('category', category); // string OK
+  if (tag) params.set('tag', tag);              // string OK
 
   const baseUrl = getBaseUrl();
   const url = `${baseUrl}/api/posts${params.toString() ? `?${params.toString()}` : ''}`;
@@ -54,18 +64,25 @@ async function getPosts(sp: SearchParams): Promise<ApiResponse> {
   });
 
   if (!response.ok) {
-    throw new Error(`Error fetching posts: ${response.status}`);
+    // Surface un message utile si l’API renvoie une erreur JSON
+    let detail = '';
+    try {
+      const j = await response.json();
+      detail = j?.message ? ` - ${j.message}` : '';
+    } catch {}
+    throw new Error(`Error fetching posts: ${response.status}${detail}`);
   }
 
   return response.json();
 }
 
+// Next 15: searchParams est une Promise et doit être await
 interface BlogPageProps {
   searchParams: Promise<SearchParams>;
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-   const sp = await searchParams; 
+  const sp = await searchParams; // obligatoire en Next 15
 
   try {
     const data = await getPosts(sp);
@@ -91,6 +108,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               )}
             </div>
 
+            {/* Active filters */}
             {(data.filters.category || data.filters.tag) && (
               <div className="mt-4 flex justify-center gap-2">
                 {data.filters.category && (
@@ -126,11 +144,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             </div>
           )}
 
+          {/* Simple pagination */}
           {data.totalPages > 1 && (
             <div className="flex justify-center items-center gap-4">
               {data.hasPreviousPage && (
                 <a
-                  href={`?page=${data.currentPage - 1}${sp.category ? `&category=${sp.category}` : ''}${sp.tag ? `&tag=${sp.tag}` : ''}`}
+                  href={`?page=${data.currentPage - 1}${first(sp.category) ? `&category=${first(sp.category)}` : ''}${first(sp.tag) ? `&tag=${first(sp.tag)}` : ''}`}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Previous
@@ -143,7 +162,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
               {data.hasNextPage && (
                 <a
-                  href={`?page=${data.currentPage + 1}${sp.category ? `&category=${sp.category}` : ''}${sp.tag ? `&tag=${sp.tag}` : ''}`}
+                  href={`?page=${data.currentPage + 1}${first(sp.category) ? `&category=${first(sp.category)}` : ''}${first(sp.tag) ? `&tag=${first(sp.tag)}` : ''}`}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Next
@@ -171,6 +190,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   }
 }
 
+// Metadata
 export const metadata = {
   title: 'Blog',
   description: 'Discover our latest articles and news',
