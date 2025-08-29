@@ -9,7 +9,7 @@ type ApiPost = {
   id: string;
   slug: string;
   title: string;
-  excerpt: string | null;
+  excerpt: string | null; 
   published: boolean;
   order: number;
   createdAt: string;

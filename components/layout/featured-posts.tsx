@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import PostCard from "@/components/posts/PostCard";
 
-// Types alignés sur /app/api/posts/route.ts (GET)
+// Types aligned with /app/api/posts/route.ts (GET)
 type ApiPost = {
   id: string;
   slug: string;
@@ -45,7 +45,7 @@ export function FeaturedPosts() {
         setLoading(true);
         setError(null);
 
-        // Limiter à 6 posts pour reproduire l’ancien comportement
+        // Limit to 6 posts to reproduce the previous behavior
         const res = await fetch(`/api/posts?limit=6`, {
           signal: controller.signal,
           headers: { accept: "application/json" },
@@ -56,16 +56,10 @@ export function FeaturedPosts() {
         }
 
         const data: ApiResponse = await res.json();
-
-        // Option: si on souhaite forcer l'ordre par createdAt desc localement
-        // const sorted = [...(data.posts ?? [])].sort(
-        //   (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
-        // );
-
         setPosts(data.posts ?? []);
       } catch (e: any) {
         if (e?.name !== "AbortError") {
-          setError(e?.message || "Une erreur est survenue lors du chargement des articles.");
+          setError(e?.message || "An error occurred while loading the articles.");
         }
       } finally {
         setLoading(false);
@@ -87,7 +81,7 @@ export function FeaturedPosts() {
         </p>
       </div>
 
-      {/* État d’erreur */}
+      {/* Error state */}
       {error && (
         <div className="px-4 sm:px-0 text-red-600 text-sm mb-4">
           {error}
@@ -95,7 +89,7 @@ export function FeaturedPosts() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
-        {/* Skeletons de chargement */}
+        {/* Loading skeletons */}
         {loading &&
           Array.from({ length: 6 }).map((_, i) => (
             <div
@@ -111,11 +105,11 @@ export function FeaturedPosts() {
             </div>
           ))}
 
-        {/* Liste des posts */}
+        {/* Posts list */}
         {!loading &&
           posts.map((post) => (
             <div key={post.id} className="group">
-              {/* PostCard attend un objet Post+relations ; les champs fournis par l’API sont compatibles */}
+              {/* PostCard expects a Post object with relations; the API fields are compatible */}
               <PostCard post={post as any} />
             </div>
           ))}
