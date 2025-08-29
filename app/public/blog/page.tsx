@@ -85,7 +85,7 @@ function PostsLoading() {
             </div>
           </div>
         </div>
-      ))}
+      ))} 
     </div>
   );
 }
