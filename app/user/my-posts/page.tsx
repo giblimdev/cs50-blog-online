@@ -11,7 +11,7 @@ import PostCard from "@/components/posts/PostCard";
 import type { Post, Category, Tag, Image, User as PrismaUser } from "@/lib/generated/prisma/client";
 
 type MyPostWithRelations = Post & {
-  categories: Category[];
+  categories: Category[]; 
   tags: Tag[];
   images: Image[];
   author: PrismaUser;
@@ -51,11 +51,7 @@ export default function MyPostsPage() {
   };
 
   const handleCreatePost = () => {
-    router.push("/write");
-  };
-
-  const handleEditPost = (postId: string) => {
-    router.push(`/user/my-posts/${postId}`);
+    router.push("/user/write");
   };
 
   if (isSessionLoading || isLoading) {
@@ -82,7 +78,7 @@ export default function MyPostsPage() {
           ))}
         </div>
       </div>
-    );
+    ); 
   }
 
   return (
@@ -114,16 +110,6 @@ export default function MyPostsPage() {
               <div key={post.id} className="relative group">
                 <PostCard post={post} />
 
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => handleEditPost(post.id)}
-                    className="bg-white/90 backdrop-blur-sm shadow-lg"
-                  >
-                    Edit
-                  </Button>
-                </div>
 
                 {!post.published && (
                   <div className="absolute top-4 left-4 z-10">

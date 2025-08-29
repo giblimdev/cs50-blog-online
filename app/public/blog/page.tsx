@@ -1,9 +1,9 @@
-// app/public/blog/page.tsx
-import { Suspense } from 'react';
-import PostCard from '@/components/posts/PostCard';
-import { Post, Category, Tag, Image, User as PrismaUser } from '@/lib/generated/prisma/client';
+// app/public/blog/page.tsx 
 
-// Type pour la réponse de l'API
+import { Post, Category, Tag, Image, User as PrismaUser } from '@/lib/generated/prisma/client';
+import PostCard from '@/components/posts/PostCard';
+
+// Type for the API response
 interface ApiResponse {
   posts: (Post & {
     categories: Category[];
@@ -22,11 +22,11 @@ interface ApiResponse {
   };
 }
 
-// Fonction pour récupérer les posts
+// Function to fetch posts
 async function getPosts(searchParams: { [key: string]: string | string[] | undefined }): Promise<ApiResponse> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   
-  // Construction des paramètres de recherche
+  // Building search parameters
   const params = new URLSearchParams();
   
   if (searchParams.page) {
@@ -45,20 +45,20 @@ async function getPosts(searchParams: { [key: string]: string | string[] | undef
   const url = `${baseUrl}/api/posts${params.toString() ? `?${params.toString()}` : ''}`;
   
   const response = await fetch(url, {
-    next: { revalidate: 60 }, // Revalider toutes les 60 secondes
+    next: { revalidate: 60 }, // Revalidate every 60 seconds
     headers: {
       'Content-Type': 'application/json',
     },
   });
 
   if (!response.ok) {
-    throw new Error(`Erreur lors de la récupération des posts: ${response.status}`);
+    throw new Error(`Error fetching posts: ${response.status}`);
   }
 
   return response.json();
 }
 
-// Composant de chargement
+// Loading component
 function PostsLoading() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -90,14 +90,14 @@ function PostsLoading() {
   );
 }
 
-// Interface pour les props de la page
+// Interface for page props
 interface BlogPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-// Composant principal de la page
+// Main page component
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  // Résoudre la promesse des searchParams
+  // Resolve the searchParams promise
   const resolvedSearchParams = await searchParams;
   
   try {
@@ -106,32 +106,32 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     return (
       <div className="min-h-screen bg-gray-50/50 py-12">
         <div className="container mx-auto px-4">
-          {/* En-tête */}
+          {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               Blog
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Découvrez nos derniers articles et actualités
+              Discover our latest articles and news
             </p>
             
-            {/* Informations de pagination */}
+            {/* Pagination info */}
             <div className="mt-6 text-sm text-gray-500">
               {data.totalCount > 0 ? (
                 <span>
-                  Affichage de {((data.currentPage - 1) * 9) + 1} à {Math.min(data.currentPage * 9, data.totalCount)} sur {data.totalCount} articles
+                  Showing {((data.currentPage - 1) * 9) + 1} to {Math.min(data.currentPage * 9, data.totalCount)} of {data.totalCount} articles
                 </span>
               ) : (
-                <span>Aucun article trouvé</span>
+                <span>No articles found</span>
               )}
             </div>
 
-            {/* Filtres actifs */}
+            {/* Active filters */}
             {(data.filters.category || data.filters.tag) && (
               <div className="mt-4 flex justify-center gap-2">
                 {data.filters.category && (
                   <span className="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
-                    Catégorie: {data.filters.category}
+                    Category: {data.filters.category}
                   </span>
                 )}
                 {data.filters.tag && (
@@ -143,7 +143,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             )}
           </div>
 
-          {/* Grille des posts */}
+          {/* Post grid */}
           {data.posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {data.posts.map((post) => (
@@ -154,17 +154,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📝</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Aucun article trouvé
+                No articles found
               </h3>
               <p className="text-gray-600">
                 {data.filters.category || data.filters.tag
-                  ? "Aucun article ne correspond à vos critères de recherche."
-                  : "Il n'y a pas encore d'articles publiés."}
+                  ? "No articles match your search criteria."
+                  : "There are no published articles yet."}
               </p>
             </div>
           )}
 
-          {/* Pagination simple */}
+          {/* Simple pagination */}
           {data.totalPages > 1 && (
             <div className="flex justify-center items-center gap-4">
               {data.hasPreviousPage && (
@@ -172,12 +172,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   href={`?page=${data.currentPage - 1}${resolvedSearchParams.category ? `&category=${resolvedSearchParams.category}` : ''}${resolvedSearchParams.tag ? `&tag=${resolvedSearchParams.tag}` : ''}`}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Précédent
+                  Previous
                 </a>
               )}
               
               <span className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                Page {data.currentPage} sur {data.totalPages}
+                Page {data.currentPage} of {data.totalPages}
               </span>
               
               {data.hasNextPage && (
@@ -185,7 +185,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   href={`?page=${data.currentPage + 1}${resolvedSearchParams.category ? `&category=${resolvedSearchParams.category}` : ''}${resolvedSearchParams.tag ? `&tag=${resolvedSearchParams.tag}` : ''}`}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Suivant
+                  Next
                 </a>
               )}
             </div>
@@ -194,7 +194,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       </div>
     );
   } catch (error) {
-    console.error('Erreur lors du chargement des posts:', error);
+    console.error('Error loading posts:', error);
     
     return (
       <div className="min-h-screen bg-gray-50/50 py-12">
@@ -202,10 +202,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Erreur de chargement
+              Loading error
             </h3>
             <p className="text-gray-600">
-              Une erreur est survenue lors du chargement des articles.
+              An error occurred while loading the articles.
             </p>
           </div>
         </div>
@@ -214,15 +214,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   }
 }
 
-// Metadata pour la page
+// Metadata for the page
 export const metadata = {
   title: 'Blog',
-  description: 'Découvrez nos derniers articles et actualités',
+  description: 'Discover our latest articles and news',
 };
 
-// Génération des paramètres statiques
+// Generate static parameters
 export async function generateStaticParams() {
-  // Vous pouvez pré-générer les premières pages pour améliorer les performances
+  // You can pre-generate the first few pages to improve performance
   return [
     { page: '1' },
     { page: '2' },

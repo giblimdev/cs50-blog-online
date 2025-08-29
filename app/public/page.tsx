@@ -3,10 +3,14 @@ import { Suspense } from "react";
 import { HeroSection } from "@/components/layout/hero-section";
 import { FeaturedPosts } from "@/components/layout/featured-posts";
 import { Skeleton } from "@/components/ui/skeleton";
+import ParisHero from "@/components/paris-hero";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className=" bg-gradient-to-br from-slate-50 to-blue-50">
+<div>
+    <ParisHero />
+</div>
       <HeroSection />
 
       {/* Featured Posts */}

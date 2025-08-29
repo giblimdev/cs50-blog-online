@@ -37,14 +37,12 @@ export default function Header() {
             <Logo />
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
             <Nav />
           </div>
 
-          {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            {/* Search Button */}
+            
             <Button
               variant="ghost"
               size="sm"
@@ -66,11 +64,8 @@ export default function Header() {
               </Link>
             </Button>
 
-            {/* User Authentication */}
             <IsConnected />
           </div>
-
-          {/* Mobile menu button */}
           <div className="lg:hidden">
             <Button
               variant="ghost"
@@ -87,13 +82,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
               <Nav />
-
-              {/* Mobile Actions */}
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-100">
                 <Button
                   variant="ghost"

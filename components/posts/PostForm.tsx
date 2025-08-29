@@ -36,11 +36,13 @@ interface PostFormData {
 interface PostFormProps {
   initialData?: Partial<PostFormData & { id: string }>;
   mode?: "create" | "edit";
+  onSuccess?: () => void; 
+  onCancel?: () => void; 
 }
 
-export default function PostForm({ initialData, mode = "create" }: PostFormProps) {
+export default function PostForm({ initialData, mode = "create", onSuccess, onCancel }: PostFormProps) {
   const router = useRouter();
-  const { data: session, isPending } = useSession(); // Remplacez status par isPending
+  const { data: session, isPending } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<PostFormData>({
     title: initialData?.title || "",
@@ -53,14 +55,12 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
     tagIds: initialData?.tagIds || [],
     images: initialData?.images || [],
   });
-
-  // Vérifier que l'utilisateur est connecté
   useEffect(() => {
-    if (!isPending && !session) { // Vérifiez si la session est chargée et si l'utilisateur n'est pas connecté
+    if (!isPending && !session) {
       toast.error("You must be logged in to create or edit posts");
       router.push("/auth/login");
     }
-  }, [session, isPending, router]); // Ajoutez session et isPending aux dépendances
+  }, [session, isPending, router]);
 
   // Automatic slug generation from the title
   const generateSlug = (title: string) => {
@@ -229,7 +229,7 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       return;
     }
 
-    // Vérifier que l'utilisateur est connecté
+    // Check that the user is logged in
     if (!session?.user?.id) {
       toast.error("You must be logged in to create or edit posts");
       return;
@@ -243,11 +243,9 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
         : "/api/posts";
       
       const method = mode === "edit" ? "PUT" : "POST";
-
-      // Préparer les données à envoyer, en incluant l'authorId
       const postData = {
         ...formData,
-        authorId: session.user.id // Ajouter l'authorId depuis la session
+        authorId: session.user.id 
       };
 
       const res = await fetch(url, {
@@ -259,8 +257,14 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       if (res.ok) {
         const post = await res.json();
         toast.success(mode === "edit" ? "Post updated" : "Post created");
-        router.push(`/user/my-posts`); 
-        router.refresh();
+        
+        // Call onSuccess if provided, otherwise redirect
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push(`/user/my-posts`); 
+          router.refresh();
+        }
       } else {
         const error = await res.json();
         toast.error(error.message || "Error saving post");
@@ -270,6 +274,15 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
       toast.error("Server error");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Call onCancel if provided, otherwise navigate back
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.back();
     }
   };
 
@@ -474,13 +487,13 @@ export default function PostForm({ initialData, mode = "create" }: PostFormProps
           <Button 
             type="button" 
             variant="outline" 
-            onClick={() => router.back()}
+            onClick={handleCancel} 
             disabled={isLoading}
           >
             Cancel
           </Button>
         </div>
       </form>
-    </div>
+    </div> 
   );
 }

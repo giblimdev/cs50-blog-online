@@ -17,10 +17,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/layout/header/Header";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <Header />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Hero Section */}
