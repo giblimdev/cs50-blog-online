@@ -1,11 +1,11 @@
-//@/app/api/categories/[id]/route.ts
+// @/app/api/categories/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // GET /api/categories/[id] - Get a specific category
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -58,6 +58,11 @@ export async function GET(
     return NextResponse.json(category);
   } catch (error) {
     console.error("Error fetching category:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -68,7 +73,7 @@ export async function GET(
 // PUT /api/categories/[id] - Update a specific category
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -134,6 +139,11 @@ export async function PUT(
     return NextResponse.json(updatedCategory);
   } catch (error) {
     console.error("Error updating category:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -144,7 +154,7 @@ export async function PUT(
 // DELETE /api/categories/[id] - Delete a specific category
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -189,6 +199,11 @@ export async function DELETE(
     );
   } catch (error) {
     console.error("Error deleting category:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
