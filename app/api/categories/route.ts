@@ -6,17 +6,14 @@ import prisma from "@/lib/prisma";
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: [
-        { order: 'asc' },
-        { name: 'asc' }
-      ],
+      orderBy: [{ order: "asc" }, { name: "asc" }],
       include: {
         _count: {
           select: {
-            posts: true
-          }
-        }
-      }
+            posts: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(categories);
@@ -35,7 +32,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, order = 10 } = body;
 
-    if (!name || typeof name !== 'string' || !name.trim()) {
+    if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
         { error: "Category name is required" },
         { status: 400 }
@@ -55,11 +52,8 @@ export async function POST(request: NextRequest) {
     // Check if the name or slug already exists
     const existingCategory = await prisma.category.findFirst({
       where: {
-        OR: [
-          { name: name.trim() },
-          { slug }
-        ]
-      }
+        OR: [{ name: name.trim() }, { slug }],
+      },
     });
 
     if (existingCategory) {
@@ -73,8 +67,8 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        order: Number(order) || 10
-      }
+        order: Number(order) || 10,
+      },
     });
 
     return NextResponse.json(category, { status: 201 });
@@ -100,7 +94,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (!name || typeof name !== 'string' || !name.trim()) {
+    if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
         { error: "Category name is required" },
         { status: 400 }
@@ -109,7 +103,7 @@ export async function PUT(request: NextRequest) {
 
     // Check if the category exists
     const existingCategory = await prisma.category.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingCategory) {
@@ -135,13 +129,10 @@ export async function PUT(request: NextRequest) {
         AND: [
           { id: { not: id } },
           {
-            OR: [
-              { name: name.trim() },
-              { slug }
-            ]
-          }
-        ]
-      }
+            OR: [{ name: name.trim() }, { slug }],
+          },
+        ],
+      },
     });
 
     if (duplicateCategory) {
@@ -156,8 +147,8 @@ export async function PUT(request: NextRequest) {
       data: {
         name: name.trim(),
         slug,
-        ...(order !== undefined && { order: Number(order) })
-      }
+        ...(order !== undefined && { order: Number(order) }),
+      },
     });
 
     return NextResponse.json(updatedCategory);
@@ -174,7 +165,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
@@ -189,10 +180,10 @@ export async function DELETE(request: NextRequest) {
       include: {
         _count: {
           select: {
-            posts: true
-          }
-        }
-      }
+            posts: true,
+          },
+        },
+      },
     });
 
     if (!existingCategory) {
@@ -211,7 +202,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     await prisma.category.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json(
@@ -224,6 +215,5 @@ export async function DELETE(request: NextRequest) {
       { error: "Error deleting category" },
       { status: 500 }
     );
-  }  
+  }
 }
- 
