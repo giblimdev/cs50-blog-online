@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, LogOut, Settings, PenTool, UserCircle } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Settings,
+  PenTool,
+  UserCircle,
+  ChevronDown,
+} from "lucide-react";
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
@@ -67,7 +74,7 @@ export default function IsConnected() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-8 w-8 rounded-full lg:h-10 lg:w-auto lg:rounded-md lg:px-3"
+          className="relative h-8 w-auto rounded-full lg:h-10 lg:rounded-md lg:px-3"
         >
           <Avatar className="h-8 w-8 lg:h-6 lg:w-6">
             <AvatarImage
@@ -78,6 +85,7 @@ export default function IsConnected() {
               {session.user.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
+          <ChevronDown className="h-4 w-4 ml-1 text-gray-500" />
           <span className="hidden lg:block ml-2 text-sm font-medium">
             {session.user.name}
           </span>
@@ -124,7 +132,6 @@ export default function IsConnected() {
             My Posts
           </Link>
         </DropdownMenuItem>
-
 
         <DropdownMenuSeparator />
 
