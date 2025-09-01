@@ -42,7 +42,6 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex items-center space-x-4">
-            
             <Button
               variant="ghost"
               size="sm"
@@ -58,7 +57,7 @@ export default function Header() {
               size="sm"
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
-              <Link href="/user//write">
+              <Link href="/user/write">
                 <PenTool className="h-4 w-4 mr-2" />
                 Write
               </Link>
