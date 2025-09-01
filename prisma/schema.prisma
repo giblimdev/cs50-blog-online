@@ -82,7 +82,7 @@ model Post {
   content   String
   published Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
+  updatedAt DateTime @updatedAt
   authorId  String
 
   comments   Comment[]
@@ -108,7 +108,7 @@ model Comment {
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies Comment[] @relation("CommentReplies")
   post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
+
   @@map("comment")
 }
 
@@ -120,9 +120,9 @@ model Image {
   createdAt DateTime @default(now())
   postId    String?
   userId    String?
-  
-  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  post Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("image")
 }
@@ -134,17 +134,16 @@ model Category {
   slug  String @unique
 
   posts Post[] @relation("PostCategories")
-  
 
   @@map("category")
 }
 
 model Tag {
-  id         String @id @default(cuid())
-  name       String @unique
-  order      Int    @default(10)
-  slug       String @unique
-  posts    Post[]   @relation("PostTags")
+  id    String @id @default(cuid())
+  name  String @unique
+  order Int    @default(10)
+  slug  String @unique
+  posts Post[] @relation("PostTags")
 
   @@map("tag")
 }
@@ -158,13 +157,14 @@ model Profile {
 
   @@map("profile")
 }
+
 model helpDev {
-  id                   String   @id @default(uuid()) @db.Uuid
-  titre                String
-  presentationProjet   String?
-  section              Json[]
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default(uuid()) @db.Uuid
+  titre              String
+  presentationProjet String?
+  section            Json[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@map("helpDev")
 }
