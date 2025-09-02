@@ -2,35 +2,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 
-// Interface pour la validation des données
+// Interface for data validation
 interface ForgotPasswordRequest {
   email: string;
 }
 
-// Fonction pour valider l'email
+// Function to validate the email
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Fonction pour générer un token de réinitialisation
+// Function to generate a reset token
 function generateResetToken(): string {
   return randomBytes(32).toString("hex");
 }
 
-// Simuler une base de données d'utilisateurs pour la démo
+// Simulate a user database for the demo
 async function findUserByEmail(email: string) {
-  // Pour la démo, on accepte tous les emails valides
+  // For the demo, we accept all valid emails
   return { id: 1, email };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Parser le body de la requête
+    // Parse the request body
     const body: ForgotPasswordRequest = await request.json();
     const { email } = body;
 
-    // Validation des données
+    // Validate the data
     if (!email) {
       return NextResponse.json(
         { message: "Email is required" },
@@ -45,13 +45,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vérifier si l'utilisateur existe (pour la démo, on accepte tout)
+    // Check if the user exists (for the demo, we accept everything)
     const user = await findUserByEmail(email.toLowerCase());
 
-    // Générer un token de réinitialisation
+    // Generate a reset token
     const resetToken = generateResetToken();
 
-    // Pour la démonstration, on log le token et l'URL
+    // For demonstration, we log the token and the URL
     const resetUrl = `${
       process.env.NEXTAUTH_URL || "http://localhost:3000"
     }/auth/reset-password?token=${resetToken}`;
@@ -62,13 +62,13 @@ export async function POST(request: NextRequest) {
     console.log(`Reset URL: ${resetUrl}`);
     console.log("=================");
 
-    // Simuler un délai d'envoi d'email
+    // Simulate an email sending delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Retourner la réponse avec le token pour la démo
+    // Return the response with the token for the demo
     return NextResponse.json({
       message: "Reset link sent successfully",
-      // Pour la démo uniquement - ne jamais faire ça en production !
+      // For demo purposes only - never do this in production!
       resetUrl: resetUrl,
       token: resetToken,
     });
